@@ -64,7 +64,7 @@ function playMusic(trackName, track) {
   if (audio) {
     audio.pause();
   }
-  audio.src = `https://vinay131313.github.io/spotify-player/spotify-player/songs/${track}`;
+  audio.src = `https://vinay131313.github.io/spotify-player/songs/${track}`;
   audio.play();
   helper = 1;
   console.log("track : " + track);
