@@ -6,37 +6,28 @@ let songs = new Map();
 
 async function getSongs(folder) {
   songs.clear();
-  let fs = await fetch(`/spotify-player/songs/${folder}`);
-  if (!fs.ok) {
-    throw new Error("Failed to fetch: fs (getSongs function)");
-  }
-  let response = await fs.text();
-  let div = document.createElement("div");
-  div.innerHTML = response;
-  let as = div.getElementsByTagName("a");
 
-  for (let i = 0; i < as.length; i++) {
-    const element = as[i];
-    if (element.href.endsWith(".mp3")) {
-      let temp = decodeURIComponent(element.href.split(`${folder}/`)[1]);
-      temp = temp.split(".mp3")[0];
-      let temp1 = temp.split("(")[0];
-      let temp2 = temp.includes(")") ? temp.split(")")[1] : "";
-      temp = temp1 + temp2;
-      songs.set(temp.trim(), element.href);
-    }
-  }
+  let fs = await fetch(`/spotify-player/songs/${folder}/${folder}.json`);
+  fs = await fs.json();
 
   let songUl = document.querySelector(".songList");
   songUl.innerHTML = "";
 
-  for (const [key, value] of songs) {
-    console.log("key : " + key);
+  for (const item of fs) {
+    console.log("item : " + item)
+    let temp = item
+    temp = temp.split(".mp3")[0];
+    let temp1 = temp.split("(")[0];
+    let temp2 = temp.includes(")") ? temp.split(")")[1] : "";
+    temp = temp1 + temp2;
+    temp = temp.trim();
+    console.log("temp : " + temp)
+    songs.set(temp, item);
     songUl.innerHTML += `
       <ul>
         <div class="music invert"><img src="img/music.svg" alt=""></div>
         <div class="info">
-          <div class="songName">${key}</div>
+          <div class="songName">${temp}</div>
         </div>
         <div class="playNow">play now</div>
         <div class="playSvg invert"><img class="svg" src="img/play.svg" alt=""></div>
@@ -73,7 +64,7 @@ function playMusic(trackName, track) {
   if (audio) {
     audio.pause();
   }
-  audio.src = track;
+  audio.src = `https://vinay131313.github.io/spotify-player/spotify-player/songs/${track}`;
   audio.play();
   helper = 1;
   console.log("track : " + track);
@@ -128,18 +119,16 @@ function playMusic(trackName, track) {
 async function createAlbum() {
   const allSongFolder = await fetch("/spotify-player/songs/folder.json");
   const folder = await allSongFolder.json();
-  for (const item of folder) 
-  {
+  for (const item of folder) {
     let a = await fetch(`/spotify-player/songs/${item}/info.json`);
-    if (!a) 
-    {
+    if (!a) {
       throw new Error("Failed to fetch :  a");
     }
-      let response = await a.json();
+    let response = await a.json();
 
-      document.querySelector(
-        ".card-container"
-      ).innerHTML += `<div data-folder = "${item}" class="card">
+    document.querySelector(
+      ".card-container"
+    ).innerHTML += `<div data-folder = "${item}" class="card">
                         <div class="playout">
                             <div class="play">
                                 <div class="circular"><img src="img/play.svg" alt=""></div>
@@ -152,9 +141,8 @@ async function createAlbum() {
                         <h2 class="f-size1">${response.title}</h2>
                         <p class="f-size1">${response.discription}</p>
                     </div>`;
-    }
   }
-
+}
 
 async function main() {
   let songUl = document.querySelector(".songList");
@@ -244,6 +232,8 @@ async function main() {
   }
 
   document.querySelector(".songList").addEventListener("click", songer);
+
+  //---------------------------------------------------------------------------------------------------------
   let play = document.querySelector(".play_button");
   play.addEventListener("click", () => {
     let play0;
