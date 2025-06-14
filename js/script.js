@@ -126,7 +126,7 @@ function playMusic(trackName, track) {
 }
 
 async function createAlbum() {
-  const allSongFolder = await fetch("/songs/folder.json");
+  const allSongFolder = await fetch("/spotify-player/songs/folder.json");
   const folder = await allSongFolder.json();
   for (const item of folder) 
   {
