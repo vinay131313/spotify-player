@@ -3,6 +3,7 @@ let audio = new Audio();
 let helper = 0;
 let currentSongGlobal;
 let songs = new Map();
+let globalFolder ;
 
 async function getSongs(folder) {
   songs.clear();
@@ -64,7 +65,9 @@ function playMusic(trackName, track) {
   if (audio) {
     audio.pause();
   }
-  audio.src = `https://vinay131313.github.io/spotify-player/songs/${track}`;
+  console.log("folder name :")
+  console.log(globalFolder)
+  audio.src = `https://vinay131313.github.io/spotify-player/songs/${globalFolder}/${track}`;
   audio.play();
   helper = 1;
   console.log("track : " + track);
@@ -155,6 +158,7 @@ async function main() {
       const card = e.target.closest(".card");
       if (card) {
         const folder = card.dataset.folder;
+        globalFolder = folder;
         await getSongs(folder);
       }
     });
