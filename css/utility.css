@@ -1,0 +1,45 @@
+.invert{
+    filter: invert(1);
+}
+.bg-black {
+  background-color: black;
+  color: white;
+}
+.bg-grey {
+  background-color: #121212;
+}
+.bg2-grey {
+  background-color: #232323;
+}
+.red-border{
+    border: 2px solid brown;
+}
+.justify{
+    justify-content: center;
+}
+.flex{
+    display: flex;
+}
+.rounded{
+    border-radius: 10px;
+}
+.m-1
+{
+    margin:10px;
+}
+.p-1{
+    padding:10px;
+}
+.green-border{
+    border : 4px solid green;
+}
+.r-1{
+    border-radius: 30px;
+}
+/* .r-2{
+    border-radius: 10px;
+} */
+.f-size1{
+    font-size: 75%;
+
+}
