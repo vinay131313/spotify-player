@@ -130,7 +130,7 @@ async function createAlbum() {
   const folder = await allSongFolder.json();
   for (const item of folder) 
   {
-    let a = await fetch(`spotify-player/songs/${item}/info.json`);
+    let a = await fetch(`/spotify-player/songs/${item}/info.json`);
     if (!a) 
     {
       throw new Error("Failed to fetch :  a");
