@@ -1,4 +1,4 @@
-// Refactored and corrected version of your music player JavaScript
+
 let audio = new Audio();
 let helper = 0;
 let currentSongGlobal;
