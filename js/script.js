@@ -52,13 +52,17 @@ function secondsToMinutes(seconds) {
 
 function updateTime() {
   if (audio.readyState >= 1) {
-    document.querySelector(".songTime").innerHTML = `${secondsToMinutes(audio.currentTime)} / ${secondsToMinutes(audio.duration)}`;
-    document.querySelector(".circle").style.left = (audio.currentTime / audio.duration) * 100 + "%";
+    document.querySelector(".songTime").innerHTML = `${secondsToMinutes(
+      audio.currentTime
+    )} / ${secondsToMinutes(audio.duration)}`;
+    document.querySelector(".circle").style.left =
+      (audio.currentTime / audio.duration) * 100 + "%";
     let play = document.querySelector(".play_button");
     if (audio.currentTime === audio.duration) {
       console.log("song finish");
       play.src = "img/play.svg";
-      if (currentSongGlobal) currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+      if (currentSongGlobal)
+        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
     }
   }
 }
@@ -108,38 +112,34 @@ function playMusic(trackName, track) {
       mute0 = 0;
       audio.volume = volumetemp;
       document.querySelector(".range").value = volumetemp * 100;
-      document.querySelector(".volPercentage").innerHTML = `${volumetemp * 100}%`;
+      document.querySelector(".volPercentage").innerHTML = `${
+        volumetemp * 100
+      }%`;
       e.target.src = "img/volume.svg";
     }
   });
 
-  if (currentSongGlobal) currentSongGlobal.querySelector(".svg").src = "img/pause.svg";
+  if (currentSongGlobal)
+    currentSongGlobal.querySelector(".svg").src = "img/pause.svg";
   document.querySelector(".play_button").src = "img/pause.svg";
   audio.addEventListener("timeupdate", updateTime);
 }
 
-async function createAlbum()
-{
-  let allSongFolder = await fetch("/songs");
-  if(!allSongFolder){
-    throw new Error(`Failed to fetch :  allSongFolder`);
-  }
-  let response = await allSongFolder.text();
-  let div = document.createElement("div")
-  div.innerHTML = response
-  let liElement = div.getElementsByTagName("li")
-  
-  for(let i = 1 ; i < liElement.length; i++)
+async function createAlbum() {
+  const allSongFolder = await fetch("/songs/folder.json");
+  const folder = await allSongFolder.json();
+  for (const item of folder) 
+  {
+    let a = await fetch(`/songs/${item}/info.json`);
+    if (!a) 
     {
-      let folder = liElement[i].getElementsByTagName("a")[0].href.split("/songs/")[1];
-      console.log(folder)
-      let a = await fetch(`/songs/${folder}/info.json`);
-      if(!a){
-    throw new Error("Failed to fetch :  a");
-  }
+      throw new Error("Failed to fetch :  a");
+    }
       let response = await a.json();
 
-      document.querySelector(".card-container").innerHTML += `<div data-folder = "${folder}" class="card">
+      document.querySelector(
+        ".card-container"
+      ).innerHTML += `<div data-folder = "${item}" class="card">
                         <div class="playout">
                             <div class="play">
                                 <div class="circular"><img src="img/play.svg" alt=""></div>
@@ -147,27 +147,29 @@ async function createAlbum()
                         </div>
 
                         <img class="rounded"
-                            src="/songs/${folder}/cover.jpeg"
+                            src="/songs/${item}/cover.jpeg"
                             alt="">
                         <h2 class="f-size1">${response.title}</h2>
                         <p class="f-size1">${response.discription}</p>
-                    </div>`
-  } 
-}
+                    </div>`;
+    }
+  }
 
 
 async function main() {
   let songUl = document.querySelector(".songList");
   createAlbum();
-  
+
   //Use event delegation for showing dyanmically populated elements
-  document.querySelector(".card-container").addEventListener("click", async (e) => {
-  const card = e.target.closest(".card");
-  if (card) {
-    const folder = card.dataset.folder;
-    await getSongs(folder);
-  }
-});
+  document
+    .querySelector(".card-container")
+    .addEventListener("click", async (e) => {
+      const card = e.target.closest(".card");
+      if (card) {
+        const folder = card.dataset.folder;
+        await getSongs(folder);
+      }
+    });
 
   // first , fav
 
@@ -243,22 +245,17 @@ async function main() {
 
   document.querySelector(".songList").addEventListener("click", songer);
   let play = document.querySelector(".play_button");
-  play.addEventListener("click", () =>
-    {
+  play.addEventListener("click", () => {
     let play0;
-    if (!currentSongGlobal) 
-    {
+    if (!currentSongGlobal) {
       currentSongGlobal = document.querySelector(".songList").firstElementChild;
     }
     play0 = currentSongGlobal.querySelector(".svg");
-    if (audio.paused) 
-    {
+    if (audio.paused) {
       audio.play();
       play.src = "img/pause.svg";
       play0.src = "img/pause.svg";
-    } 
-    else 
-    {
+    } else {
       audio.pause();
       play.src = "img/play.svg";
       play0.src = "img/play.svg";
@@ -310,7 +307,6 @@ async function main() {
     // 1. Handle scrolling when hovering song list
     if (isHoveringSongList) {
       if (e.key === "ArrowDown") {
-
         e.preventDefault();
         songList.scrollBy({ top: 40, behavior: "smooth" });
         return;
