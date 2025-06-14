@@ -1,4 +1,4 @@
-
+// Refactored and corrected version of your music player JavaScript
 let audio = new Audio();
 let helper = 0;
 let currentSongGlobal;
@@ -6,7 +6,7 @@ let songs = new Map();
 
 async function getSongs(folder) {
   songs.clear();
-  let fs = await fetch(`/spotify-player/songs/${folder}`);
+  let fs = await fetch(`/songs/${folder}`);
   if (!fs.ok) {
     throw new Error("Failed to fetch: fs (getSongs function)");
   }
@@ -126,11 +126,11 @@ function playMusic(trackName, track) {
 }
 
 async function createAlbum() {
-  const allSongFolder = await fetch("spotify-player/folder.json");
+  const allSongFolder = await fetch("/songs/folder.json");
   const folder = await allSongFolder.json();
   for (const item of folder) 
   {
-    let a = await fetch(`spotify-player/${item}/info.json`);
+    let a = await fetch(`/songs/${item}/info.json`);
     if (!a) 
     {
       throw new Error("Failed to fetch :  a");
@@ -147,7 +147,7 @@ async function createAlbum() {
                         </div>
 
                         <img class="rounded"
-                            src="spotify-player/${item}/cover.jpeg"
+                            src="/songs/${item}/cover.jpeg"
                             alt="">
                         <h2 class="f-size1">${response.title}</h2>
                         <p class="f-size1">${response.discription}</p>
@@ -447,4 +447,5 @@ async function main() {
 }
 
 main();
+
 
