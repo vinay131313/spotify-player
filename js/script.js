@@ -160,6 +160,7 @@ async function main() {
         const folder = card.dataset.folder;
         globalFolder = folder;
         await getSongs(folder);
+        document.querySelector(".left").style.left = "0%";
       }
     });
 
