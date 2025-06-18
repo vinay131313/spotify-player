@@ -156,11 +156,28 @@ async function main() {
     .querySelector(".card-container")
     .addEventListener("click", async (e) => {
       const card = e.target.closest(".card");
+      const clickOnPlay = e.target.closest(".playout");
       if (card) {
         const folder = card.dataset.folder;
         globalFolder = folder;
         await getSongs(folder);
         document.querySelector(".left").style.left = "0%";
+        if (clickOnPlay) {
+          let songListElement = document.querySelector(".songlist");
+
+          if (songListElement && songListElement.firstElementChild) {
+            let songElement = songListElement.firstElementChild;
+            let songName = songElement
+              .querySelector(".songName")
+              .innerHTML.trim();
+            currentSongGlobal = songElement;
+            updateNavButtons();
+            playMusic(songName, songs.get(songName));
+          } else {
+            console.log("❌ .songlist is missing or has no songs");
+          }
+        }
+      }
       }
     });
 
