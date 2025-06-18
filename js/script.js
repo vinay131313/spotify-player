@@ -3,7 +3,6 @@ let audio = new Audio();
 let helper = 0;
 let currentSongGlobal;
 let songs = new Map();
-let globalFolder ;
 
 async function getSongs(folder) {
   songs.clear();
@@ -15,23 +14,23 @@ async function getSongs(folder) {
   songUl.innerHTML = "";
 
   for (const item of fs) {
-    console.log("item : " + item)
-    let temp = item
+    console.log("item : " + item);
+    let temp = item;
     temp = temp.split(".mp3")[0];
     let temp1 = temp.split("(")[0];
     let temp2 = temp.includes(")") ? temp.split(")")[1] : "";
     temp = temp1 + temp2;
     temp = temp.trim();
-    console.log("temp : " + temp)
+    console.log("temp : " + temp);
     songs.set(temp, item);
     songUl.innerHTML += `
       <ul>
-        <div class="music invert"><img src="img/music.svg" alt=""></div>
+        <div class="music invert"><img src="/spotify-player/img/music.svg" alt=""></div>
         <div class="info">
           <div class="songName">${temp}</div>
         </div>
         <div class="playNow">play now</div>
-        <div class="playSvg invert"><img class="svg" src="img/play.svg" alt=""></div>
+        <div class="playSvg invert"><img class="svg" src="/spotify-player/img/play.svg" alt=""></div>
       </ul>`;
   }
 }
@@ -52,9 +51,9 @@ function updateTime() {
     let play = document.querySelector(".play_button");
     if (audio.currentTime === audio.duration) {
       console.log("song finish");
-      play.src = "img/play.svg";
+      play.src = "/spotify-player/img/play.svg";
       if (currentSongGlobal)
-        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+        currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
     }
   }
 }
@@ -65,9 +64,8 @@ function playMusic(trackName, track) {
   if (audio) {
     audio.pause();
   }
-  console.log("folder name :")
-  console.log(globalFolder)
-  audio.src = `https://vinay131313.github.io/spotify-player/songs/${globalFolder}/${track}`;
+  console.log("track : " + track);
+  audio.src = `https://vinay131313.github.io/spotify-player/spotify-player/songs/${track}`;
   audio.play();
   helper = 1;
   console.log("track : " + track);
@@ -75,7 +73,7 @@ function playMusic(trackName, track) {
   audio.volume = 0.5;
 
   document.querySelector(".volume").innerHTML = `
-    <img class="vol" src="img/volume.svg" alt="">
+    <img class="vol" src="/spotify-player/img/volume.svg" alt="">
     <input class="range" type="range" value="50">
     <p class="volPercentage">50%</p>`;
 
@@ -84,11 +82,11 @@ function playMusic(trackName, track) {
     audio.volume = volume / 100;
     document.querySelector(".volPercentage").innerHTML = `${volume}%`;
     if (mute0 && volume > 0) {
-      document.querySelector(".vol").src = "img/volume.svg";
+      document.querySelector(".vol").src = "/spotify-player/img/volume.svg";
       mute0 = 0;
     }
     if (volume === 0) {
-      document.querySelector(".vol").src = "img/mute.svg";
+      document.querySelector(".vol").src = "/spotify-player/img/mute.svg";
     } else {
       volumetemp = audio.volume;
     }
@@ -98,7 +96,7 @@ function playMusic(trackName, track) {
     if (audio.volume !== 0) {
       volumetemp = audio.volume;
       mute0 = 1;
-      e.target.src = "img/mute.svg";
+      e.target.src = "/spotify-player/img/mute.svg";
       audio.volume = 0;
       document.querySelector(".range").value = 0;
       document.querySelector(".volPercentage").innerHTML = "0%";
@@ -109,13 +107,13 @@ function playMusic(trackName, track) {
       document.querySelector(".volPercentage").innerHTML = `${
         volumetemp * 100
       }%`;
-      e.target.src = "img/volume.svg";
+      e.target.src = "/spotify-player/img/volume.svg";
     }
   });
 
   if (currentSongGlobal)
-    currentSongGlobal.querySelector(".svg").src = "img/pause.svg";
-  document.querySelector(".play_button").src = "img/pause.svg";
+    currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/pause.svg";
+  document.querySelector(".play_button").src = "/spotify-player/img/pause.svg";
   audio.addEventListener("timeupdate", updateTime);
 }
 
@@ -134,7 +132,7 @@ async function createAlbum() {
     ).innerHTML += `<div data-folder = "${item}" class="card">
                         <div class="playout">
                             <div class="play">
-                                <div class="circular"><img src="img/play.svg" alt=""></div>
+                                <div class="circular"><img src="/spotify-player/img/play.svg" alt=""></div>
                             </div>
                         </div>
 
@@ -156,13 +154,14 @@ async function main() {
     .querySelector(".card-container")
     .addEventListener("click", async (e) => 
     {
-      const card = e.target.closest(".card");
+      const card = e.target.closest(".card"); //To identify whether click is on a specific element in a container
       const clickOnPlay = e.target.closest(".playout");
       if (card) 
       {
         const folder = card.dataset.folder;
-        globalFolder = folder;
         await getSongs(folder);
+        let hamburgurChecker = document.querySelector(".hamburgur");
+
         document.querySelector(".left").style.left = "0%";
         if (clickOnPlay) 
         {
@@ -226,18 +225,18 @@ async function main() {
       e.stopImmediatePropagation();
       if (audio.paused) {
         audio.play();
-        e.target.src = "img/pause.svg";
-        document.querySelector(".play_button").src = "img/pause.svg";
+        e.target.src = "/spotify-player/img/pause.svg";
+        document.querySelector(".play_button").src = "/spotify-player/img/pause.svg";
       } else {
         audio.pause();
-        e.target.src = "img/play.svg";
-        document.querySelector(".play_button").src = "img/play.svg";
+        e.target.src = "/spotify-player/img/play.svg";
+        document.querySelector(".play_button").src = "/spotify-player/img/play.svg";
       }
       return;
     }
     //it convert prvious song play button to play format from pause format
     if (currentSongGlobal) {
-      currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+      currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
     }
     // Song row clicked (start new song)
     const trackName = clickedUl.querySelector(".songName").innerHTML.trim();
@@ -254,8 +253,8 @@ async function main() {
     playMusic(trackName, songs.get(trackName));
 
     // Sync icons
-    clickedUl.querySelector(".svg").src = "img/pause.svg";
-    document.querySelector(".play_button").src = "img/pause.svg";
+    clickedUl.querySelector(".svg").src = "/spotify-player/img/pause.svg";
+    document.querySelector(".play_button").src = "/spotify-player/img/pause.svg";
   }
 
   document.querySelector(".songList").addEventListener("click", songer);
@@ -270,12 +269,12 @@ async function main() {
     play0 = currentSongGlobal.querySelector(".svg");
     if (audio.paused) {
       audio.play();
-      play.src = "img/pause.svg";
-      play0.src = "img/pause.svg";
+      play.src = "/spotify-player/img/pause.svg";
+      play0.src = "/spotify-player/img/pause.svg";
     } else {
       audio.pause();
-      play.src = "img/play.svg";
-      play0.src = "img/play.svg";
+      play.src = "/spotify-player/img/play.svg";
+      play0.src = "/spotify-player/img/play.svg";
     }
   });
 
@@ -285,7 +284,7 @@ async function main() {
       let nextSong = currentSongGlobal.nextElementSibling;
       if (nextSong) {
         //it convert prvious song play button to play format from pause format
-        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+        currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
         currentSongGlobal.classList.remove("activeSong");
         currentSongGlobal = nextSong;
         currentSongGlobal.classList.add("activeSong");
@@ -304,7 +303,7 @@ async function main() {
       let prevSong = currentSongGlobal.previousElementSibling;
       if (prevSong) {
         //it convert prvious song play button to play format from pause format
-        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+        currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
         currentSongGlobal.classList.remove("activeSong");
         currentSongGlobal = prevSong;
         currentSongGlobal.classList.add("activeSong");
@@ -340,15 +339,15 @@ async function main() {
       const playButton = document.querySelector(".play_button");
       if (audio.paused) {
         audio.play();
-        playButton.src = "img/pause.svg";
+        playButton.src = "/spotify-player/img/pause.svg";
         if (currentSongGlobal) {
-          currentSongGlobal.querySelector(".svg").src = "img/pause.svg";
+          currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/pause.svg";
         }
       } else {
         audio.pause();
-        playButton.src = "img/play.svg";
+        playButton.src = "/spotify-player/img/play.svg";
         if (currentSongGlobal) {
-          currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+          currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
         }
       }
       return; // Exit after handling spacebar
@@ -361,7 +360,7 @@ async function main() {
       let nextSong = currentSongGlobal.nextElementSibling;
       if (nextSong) {
         //it convert prvious song play button to play format from pause format
-        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+        currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
         currentSongGlobal.classList.remove("activeSong");
         currentSongGlobal = nextSong;
         currentSongGlobal.classList.add("activeSong");
@@ -377,7 +376,7 @@ async function main() {
       let prevSong = currentSongGlobal.previousElementSibling;
       if (prevSong) {
         //it convert prvious song play button to play format from pause format
-        currentSongGlobal.querySelector(".svg").src = "img/play.svg";
+        currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/play.svg";
         currentSongGlobal.classList.remove("activeSong");
         currentSongGlobal = prevSong;
         currentSongGlobal.classList.add("activeSong");
