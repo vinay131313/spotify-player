@@ -166,7 +166,8 @@ async function main() {
         if (clickOnPlay) 
         {
           let songListElement = document.querySelector(".songlist");
-
+          while(!songListElement)
+          {console.log("element missing")}
           if (songListElement && songListElement.firstElementChild) 
           {
             let songElement = songListElement.firstElementChild;
