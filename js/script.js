@@ -3,6 +3,7 @@ let audio = new Audio();
 let helper = 0;
 let currentSongGlobal;
 let songs = new Map();
+let globalFolder;
 
 async function getSongs(folder) {
   songs.clear();
@@ -65,7 +66,7 @@ function playMusic(trackName, track) {
     audio.pause();
   }
   console.log("track : " + track);
-  audio.src = `https://vinay131313.github.io/spotify-player/songs/${track}`;
+  audio.src = `https://vinay131313.github.io/spotify-player/spotify-player/songs/${globalFolder}/${track}`;
   audio.play();
   helper = 1;
   console.log("track : " + track);
@@ -159,6 +160,7 @@ async function main() {
       if (card) 
       {
         const folder = card.dataset.folder;
+        globalFolder = folder;
         await getSongs(folder);
         let hamburgurChecker = document.querySelector(".hamburgur");
 
@@ -463,4 +465,5 @@ async function main() {
 }
 
 main();
+
 
