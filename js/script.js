@@ -165,7 +165,8 @@ async function main() {
         let hamburgurChecker = document.querySelector(".hamburgur");
 
         document.querySelector(".left").style.left = "0%";
-        if (clickOnPlay) 
+      }
+      if (clickOnPlay) 
         {
           let songListElement = document.querySelector(".songList");
           
@@ -184,7 +185,6 @@ async function main() {
             console.log("❌ .songlist is missing or has no songs");
           }
         }
-      }
     });
 
   // first , fav
