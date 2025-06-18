@@ -156,7 +156,7 @@ async function main() {
     .addEventListener("click", async (e) => 
     {
       const card = e.target.closest(".card"); //To identify whether click is on a specific element in a container
-      const clickOnPlay = e.target.closest(".playout");
+       const clickOnPlay = e.target.closest(".playout .play, .playout .circular, .playout img");
       if (card) 
       {
         const folder = card.dataset.folder;
