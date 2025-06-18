@@ -166,7 +166,7 @@
   border-radius: 50%;
 }
 .card .play {
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 .card:hover{
