@@ -154,18 +154,22 @@ async function main() {
   //Use event delegation for showing dyanmically populated elements
   document
     .querySelector(".card-container")
-    .addEventListener("click", async (e) => {
+    .addEventListener("click", async (e) => 
+    {
       const card = e.target.closest(".card");
       const clickOnPlay = e.target.closest(".playout");
-      if (card) {
+      if (card) 
+      {
         const folder = card.dataset.folder;
         globalFolder = folder;
         await getSongs(folder);
         document.querySelector(".left").style.left = "0%";
-        if (clickOnPlay) {
+        if (clickOnPlay) 
+        {
           let songListElement = document.querySelector(".songlist");
 
-          if (songListElement && songListElement.firstElementChild) {
+          if (songListElement && songListElement.firstElementChild) 
+          {
             let songElement = songListElement.firstElementChild;
             let songName = songElement
               .querySelector(".songName")
@@ -173,11 +177,12 @@ async function main() {
             currentSongGlobal = songElement;
             updateNavButtons();
             playMusic(songName, songs.get(songName));
-          } else {
+          } 
+          else 
+          {
             console.log("❌ .songlist is missing or has no songs");
           }
         }
-      }
       }
     });
 
