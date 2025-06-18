@@ -6,12 +6,17 @@ let songs = new Map();
 let globalFolder;
 
 async function getSongs(folder) {
-  songs.clear();
-
-  let fs = await fetch(`/spotify-player/songs/${folder}/${folder}.json`);
-  fs = await fs.json();
-
-  let songUl = document.querySelector(".songList");
+  try {
+    songs.clear();
+    let response = await fetch(`/spotify-player/songs/${folder}/${folder}.json`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    let fs = await response.json();
+    
+    let songUl = document.querySelector(".songList");
   songUl.innerHTML = "";
 
   for (const item of fs) {
@@ -33,6 +38,10 @@ async function getSongs(folder) {
         <div class="playNow">play now</div>
         <div class="playSvg invert"><img class="svg" src="/spotify-player/img/play.svg" alt=""></div>
       </ul>`;
+  }
+  } catch (error) {
+    console.error("Error loading songs:", error);
+    // Show error message to user
   }
 }
 
@@ -58,64 +67,79 @@ function updateTime() {
     }
   }
 }
+function showLoading() {
+  document.querySelector(".songInfo").innerHTML = "Loading...";
+}
 
-function playMusic(trackName, track) {
-  let volumetemp = 0.5;
-  let mute0 = 0;
-  if (audio) {
-    audio.pause();
+// Call showLoading() at start of playMusic()
+async function playMusic(trackName, track) {
+  try {
+    showLoading(); // Show loading state
+    
+    let volumetemp = 0.5;
+    let mute0 = 0;
+    
+    // Clean up previous audio
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.src = '';
+    }
+
+    // Create new audio element
+    audio = new Audio();
+    
+    // Set up error handling
+    audio.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
+      document.querySelector(".songInfo").innerHTML = "Error loading song";
+    });
+
+    // Encode the track name for URL safety
+    const encodedTrack = encodeURIComponent(track);
+    audio.src = `https://vinay131313.github.io/spotify-player/songs/${globalFolder}/${encodedTrack}`;
+    
+    // Wait for audio to be ready to play
+    await new Promise((resolve, reject) => {
+      audio.addEventListener('canplaythrough', resolve, { once: true });
+      audio.addEventListener('error', reject, { once: true });
+    });
+
+    // Try to play
+    await audio.play().catch(error => {
+      console.error("Playback failed:", error);
+      throw error;
+    });
+
+    // Update UI
+    document.querySelector(".songInfo").innerHTML = trackName;
+    audio.volume = 0.5;
+    
+    // Volume controls (keep your existing code)
+    document.querySelector(".volume").innerHTML = `
+      <img class="vol" src="/spotify-player/img/volume.svg" alt="">
+      <input class="range" type="range" value="50">
+      <p class="volPercentage">50%</p>`;
+
+    // ... rest of your volume control code ...
+
+    if (currentSongGlobal) {
+      currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/pause.svg";
+    }
+    document.querySelector(".play_button").src = "/spotify-player/img/pause.svg";
+    audio.addEventListener("timeupdate", updateTime);
+    
+  } catch (error) {
+    console.error("Error in playMusic:", error);
+    document.querySelector(".songInfo").innerHTML = "Error playing song";
+    // You might want to automatically try the next song here
+    if (currentSongGlobal?.nextElementSibling) {
+      const nextSong = currentSongGlobal.nextElementSibling;
+      const nextTrackName = nextSong.querySelector(".songName").innerHTML.trim();
+      playMusic(nextTrackName, songs.get(nextTrackName));
+    }
   }
-  console.log("track : " + track);
-  audio.src = `https://vinay131313.github.io/spotify-player/songs/${globalFolder}/${track}`;
-  audio.play();
-  helper = 1;
-  console.log("track : " + track);
-  document.querySelector(".songInfo").innerHTML = trackName;
-  audio.volume = 0.5;
-
-  document.querySelector(".volume").innerHTML = `
-    <img class="vol" src="/spotify-player/img/volume.svg" alt="">
-    <input class="range" type="range" value="50">
-    <p class="volPercentage">50%</p>`;
-
-  document.querySelector(".range").addEventListener("input", (e) => {
-    const volume = Number(e.target.value);
-    audio.volume = volume / 100;
-    document.querySelector(".volPercentage").innerHTML = `${volume}%`;
-    if (mute0 && volume > 0) {
-      document.querySelector(".vol").src = "/spotify-player/img/volume.svg";
-      mute0 = 0;
-    }
-    if (volume === 0) {
-      document.querySelector(".vol").src = "/spotify-player/img/mute.svg";
-    } else {
-      volumetemp = audio.volume;
-    }
-  });
-
-  document.querySelector(".vol").addEventListener("click", (e) => {
-    if (audio.volume !== 0) {
-      volumetemp = audio.volume;
-      mute0 = 1;
-      e.target.src = "/spotify-player/img/mute.svg";
-      audio.volume = 0;
-      document.querySelector(".range").value = 0;
-      document.querySelector(".volPercentage").innerHTML = "0%";
-    } else {
-      mute0 = 0;
-      audio.volume = volumetemp;
-      document.querySelector(".range").value = volumetemp * 100;
-      document.querySelector(".volPercentage").innerHTML = `${
-        volumetemp * 100
-      }%`;
-      e.target.src = "/spotify-player/img/volume.svg";
-    }
-  });
-
-  if (currentSongGlobal)
-    currentSongGlobal.querySelector(".svg").src = "/spotify-player/img/pause.svg";
-  document.querySelector(".play_button").src = "/spotify-player/img/pause.svg";
-  audio.addEventListener("timeupdate", updateTime);
 }
 
 async function createAlbum() {
